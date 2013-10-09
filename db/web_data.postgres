@@ -1,0 +1,354 @@
+--
+-- PostgreSQL database dump
+--
+
+SET statement_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+SET search_path = public, pg_catalog;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: domain; Type: TABLE; Schema: public; Owner: feeder; Tablespace: 
+--
+
+CREATE TABLE domain (
+    index integer NOT NULL,
+    id character varying(100)
+);
+
+
+ALTER TABLE public.domain OWNER TO feeder;
+
+--
+-- Name: domain_index_seq; Type: SEQUENCE; Schema: public; Owner: feeder
+--
+
+CREATE SEQUENCE domain_index_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.domain_index_seq OWNER TO feeder;
+
+--
+-- Name: domain_index_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: feeder
+--
+
+ALTER SEQUENCE domain_index_seq OWNED BY domain.index;
+
+
+--
+-- Name: occurrence; Type: TABLE; Schema: public; Owner: feeder; Tablespace: 
+--
+
+CREATE TABLE occurrence (
+    index integer NOT NULL,
+    word_index integer,
+    path_index integer,
+    events integer
+);
+
+
+ALTER TABLE public.occurrence OWNER TO feeder;
+
+--
+-- Name: occurrence_index_seq; Type: SEQUENCE; Schema: public; Owner: feeder
+--
+
+CREATE SEQUENCE occurrence_index_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.occurrence_index_seq OWNER TO feeder;
+
+--
+-- Name: occurrence_index_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: feeder
+--
+
+ALTER SEQUENCE occurrence_index_seq OWNED BY occurrence.index;
+
+
+--
+-- Name: path; Type: TABLE; Schema: public; Owner: feeder; Tablespace: 
+--
+
+CREATE TABLE path (
+    index integer NOT NULL,
+    domain_index integer,
+    id character varying(1000),
+    weird boolean,
+    download_state integer,
+    language character varying(10),
+    title character varying(1000),
+    refs integer,
+    word_count integer,
+    url_count integer,
+    file_type character varying(20),
+    feeder character varying(30),
+    date_fed timestamp without time zone,
+    processed boolean,
+    date_processing timestamp without time zone,
+    booked boolean,
+    date_booking timestamp without time zone
+);
+
+
+ALTER TABLE public.path OWNER TO feeder;
+
+--
+-- Name: path_index_seq; Type: SEQUENCE; Schema: public; Owner: feeder
+--
+
+CREATE SEQUENCE path_index_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.path_index_seq OWNER TO feeder;
+
+--
+-- Name: path_index_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: feeder
+--
+
+ALTER SEQUENCE path_index_seq OWNED BY path.index;
+
+
+--
+-- Name: rank; Type: TABLE; Schema: public; Owner: feeder; Tablespace: 
+--
+
+CREATE TABLE rank (
+    index integer NOT NULL,
+    word_index integer,
+    path_index integer,
+    stat_rank integer,
+    pop_rank integer
+);
+
+
+ALTER TABLE public.rank OWNER TO feeder;
+
+--
+-- Name: rank_index_seq; Type: SEQUENCE; Schema: public; Owner: feeder
+--
+
+CREATE SEQUENCE rank_index_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.rank_index_seq OWNER TO feeder;
+
+--
+-- Name: rank_index_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: feeder
+--
+
+ALTER SEQUENCE rank_index_seq OWNED BY rank.index;
+
+
+--
+-- Name: stat; Type: TABLE; Schema: public; Owner: feeder; Tablespace: 
+--
+
+CREATE TABLE stat (
+    index integer NOT NULL,
+    word_index integer,
+    frequency double precision
+);
+
+
+ALTER TABLE public.stat OWNER TO feeder;
+
+--
+-- Name: stat_index_seq; Type: SEQUENCE; Schema: public; Owner: feeder
+--
+
+CREATE SEQUENCE stat_index_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.stat_index_seq OWNER TO feeder;
+
+--
+-- Name: stat_index_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: feeder
+--
+
+ALTER SEQUENCE stat_index_seq OWNED BY stat.index;
+
+
+--
+-- Name: word; Type: TABLE; Schema: public; Owner: feeder; Tablespace: 
+--
+
+CREATE TABLE word (
+    index integer NOT NULL,
+    id character varying(50),
+    language character varying(5)
+);
+
+
+ALTER TABLE public.word OWNER TO feeder;
+
+--
+-- Name: word_index_seq; Type: SEQUENCE; Schema: public; Owner: feeder
+--
+
+CREATE SEQUENCE word_index_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.word_index_seq OWNER TO feeder;
+
+--
+-- Name: word_index_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: feeder
+--
+
+ALTER SEQUENCE word_index_seq OWNED BY word.index;
+
+
+--
+-- Name: index; Type: DEFAULT; Schema: public; Owner: feeder
+--
+
+ALTER TABLE ONLY domain ALTER COLUMN index SET DEFAULT nextval('domain_index_seq'::regclass);
+
+
+--
+-- Name: index; Type: DEFAULT; Schema: public; Owner: feeder
+--
+
+ALTER TABLE ONLY occurrence ALTER COLUMN index SET DEFAULT nextval('occurrence_index_seq'::regclass);
+
+
+--
+-- Name: index; Type: DEFAULT; Schema: public; Owner: feeder
+--
+
+ALTER TABLE ONLY path ALTER COLUMN index SET DEFAULT nextval('path_index_seq'::regclass);
+
+
+--
+-- Name: index; Type: DEFAULT; Schema: public; Owner: feeder
+--
+
+ALTER TABLE ONLY rank ALTER COLUMN index SET DEFAULT nextval('rank_index_seq'::regclass);
+
+
+--
+-- Name: index; Type: DEFAULT; Schema: public; Owner: feeder
+--
+
+ALTER TABLE ONLY stat ALTER COLUMN index SET DEFAULT nextval('stat_index_seq'::regclass);
+
+
+--
+-- Name: index; Type: DEFAULT; Schema: public; Owner: feeder
+--
+
+ALTER TABLE ONLY word ALTER COLUMN index SET DEFAULT nextval('word_index_seq'::regclass);
+
+
+--
+-- Name: domain_pkey; Type: CONSTRAINT; Schema: public; Owner: feeder; Tablespace: 
+--
+
+ALTER TABLE ONLY domain
+    ADD CONSTRAINT domain_pkey PRIMARY KEY (index);
+
+
+--
+-- Name: occurrence_pkey; Type: CONSTRAINT; Schema: public; Owner: feeder; Tablespace: 
+--
+
+ALTER TABLE ONLY occurrence
+    ADD CONSTRAINT occurrence_pkey PRIMARY KEY (index);
+
+
+--
+-- Name: path_pkey; Type: CONSTRAINT; Schema: public; Owner: feeder; Tablespace: 
+--
+
+ALTER TABLE ONLY path
+    ADD CONSTRAINT path_pkey PRIMARY KEY (index);
+
+
+--
+-- Name: rank_pkey; Type: CONSTRAINT; Schema: public; Owner: feeder; Tablespace: 
+--
+
+ALTER TABLE ONLY rank
+    ADD CONSTRAINT rank_pkey PRIMARY KEY (index);
+
+
+--
+-- Name: stat_pkey; Type: CONSTRAINT; Schema: public; Owner: feeder; Tablespace: 
+--
+
+ALTER TABLE ONLY stat
+    ADD CONSTRAINT stat_pkey PRIMARY KEY (index);
+
+
+--
+-- Name: word_pkey; Type: CONSTRAINT; Schema: public; Owner: feeder; Tablespace: 
+--
+
+ALTER TABLE ONLY word
+    ADD CONSTRAINT word_pkey PRIMARY KEY (index);
+
+
+--
+-- Name: public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM postgres;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+--
+-- PostgreSQL database dump complete
+--
+
