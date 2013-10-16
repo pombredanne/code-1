@@ -153,7 +153,7 @@ OBJECTS_QUERY_CLIENT=$(SOURCES_QUERY_CLIENT:.cpp=.o)
 # targets
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-all: db_feeder db_init db_rank query_server query_client
+all: make_dir db_feeder db_init db_rank query_server query_client
 
 db_feeder: $(OBJECTS_DB_FEEDER)
 	$(CC) $(LDFLAGS) $(OBJECTS_DB_FEEDER) -o $(BIN)/$@ $(LDLIBS)
@@ -183,6 +183,13 @@ include $(DEPENDENCIES:.cpp=.d)
 		$(CC) -M $(CPPFLAGS) $< > $@.$$$$; \
 		sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
 		rm -f $@.$$$$
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.PHONY : make_dir
+make_dir :
+	mkdir -p $(BIN)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
