@@ -1,0 +1,215 @@
+/***********************************************************************
+ *                            T R O K A M
+ *                 Free and Open Source Search Engine
+ *
+ * Documentation  http://www.trokam.com/
+ * Development    http://www.github.com/trokam
+ *
+ * Copyright (C) 2013, Nicolas Slusarenko
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ **********************************************************************/
+
+=========================================
+Instructions to compile and test the code
+=========================================
+
+~~~~~~~~~~~~
+1 - Platform
+~~~~~~~~~~~~
+
+These instructions as been verified in Ubuntu Linux 12.04.
+Trokam as been tested successfully also in Ubuntu Linux 12.10.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2 - Install the libraries and utilities
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Trokam depends to several services, libraries and utilities.
+If you are working in Ubuntu you could install all these dependencies running thee commands:
+
+    developer@trokam:~$ sudo aptitude install postgresql
+    developer@trokam:~$ sudo aptitude install libboost1.48-all-dev
+    developer@trokam:~$ sudo aptitude install libpqxx3-dev
+    developer@trokam:~$ sudo aptitude install libexttextcat-dev
+    developer@trokam:~$ sudo aptitude install libmagic-dev
+    developer@trokam:~$ sudo aptitude install apache2
+    developer@trokam:~$ sudo aptitude install html2text
+    developer@trokam:~$ sudo aptitude install git
+
+Optionally you might want to install 'colormake' instead of usual 'make':
+
+    developer@trokam:~$ sudo aptitude install colormake
+
+As you have just installed 'git', is a good idea to get some familiarity with this tool at http://git-scm.com/
+
+~~~~~~~~~~~~~~~~~~~~~~~~
+3 - Clone the repository
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+The code of Trokam is publicly available in GitHub, https://github.com/trokam
+Create a directory to put the code:
+
+    developer@trokam:~$ mkdir trokam
+    developer@trokam:~$ cd trokam
+
+To download the code we use the command 'git clone':
+
+    developer@trokam:~/trokam$ git clone https://github.com/trokam/code.git
+    Cloning into 'code'...
+    remote: Counting objects: 52, done.
+    remote: Compressing objects: 100% (22/22), done.
+    remote: Total 52 (delta 29), reused 52 (delta 29)
+    Unpacking objects: 100% (52/52), done.
+
+~~~~~~~~~~~~~~~~~~~~~
+4 - Build the sources
+~~~~~~~~~~~~~~~~~~~~~
+
+Change to directory 'code':
+
+    developer@trokam:~/trokam$ cd code
+
+Execute command 'colormake' or 'make':
+
+    developer@trokam:~/trokam/code/db$ colormake
+
+Optionally you might want to install the binaries in a location already pointed by PATH:
+
+    developer@trokam:~/trokam/code/db$ colormake all install
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+5 - Configure database server
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Trokam binaries works integrated with a database. This database could be running on the same machine or in a different one. These use the simpler case, a database running in the same machine.
+
+Log in as user 'postgres':
+
+    developer@trokam:~$ sudo su - postgres
+    [sudo] password for developer: 
+    postgres@trokam:$ cd /etc/postgresql/9.1/main/
+
+Back up the original configuration we will gone modify:
+
+    postgres@trokam:/etc/postgresql/9.1/main$ cp pg_hba.conf pg_hba.conf.original
+
+Modify the configuration file:
+
+    postgres@trokam:/etc/postgresql/9.1/main$ nano pg_hba.conf
+
+Change the line 90:
+
+    local   all             all                                     peer
+
+to this one:
+
+    local   all             all                                     trust
+
+Save the file and close editor.
+Create a user to own Trokam databases, which in this case is 'developer':
+
+    postgres@trokam:/etc/postgresql/9.1/main$ createuser developer
+    Shall the new role be a superuser? (y/n) n
+    Shall the new role be allowed to create databases? (y/n) y
+    Shall the new role be allowed to create more new roles? (y/n) n
+
+Exit:
+
+    postgres@trokam:/etc/postgresql/9.1/main$ exit
+
+Restart the postgres engine:
+
+    developer@trokam:~/trokam/code/db$ sudo /etc/init.d/postgresql restart
+     * Restarting PostgreSQL 9.1 database server   
+
+~~~~~~~~~~~~~~~~~~~~~~
+6 - Build the database
+~~~~~~~~~~~~~~~~~~~~~~
+
+As user daveloper go to directory trokam/code/db and create the database:
+
+    developer@trokam:~/trokam/code/db$ createdb -U developer web_data_00
+
+Create the tables for database:
+
+    developer@trokam:~/trokam/code/db$ psql -d web_data_00 -f web_data_def.postgres
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+7 - Initialize the database
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you have installed the binaries, this command will run anywhere you are located, otherwise put the complete path for you executable:
+
+    developer@trokam:~$ db_init --db-name=web_data_00 --db-user=developer --seed-url=http://www.dmoz.org/
+    DEBUG	2013-10-17 8:27:10  Database connection parameters: dbname=web_data_00 user=developer 
+    DEBUG	2013-10-17 8:27:10  connected to database
+    DEBUG	2013-10-17 8:27:10  backend version: 90109
+    DEBUG	2013-10-17 8:27:10  protocol version: 3
+    TRACE	2013-10-17 8:27:10  bool trokam::db_handler::is_db_empty()  START
+    DEBUG	2013-10-17 8:27:10  success: table 'domain' is empty
+    DEBUG	2013-10-17 8:27:10  success: table 'path' is empty
+    DEBUG	2013-10-17 8:27:10  success: table 'word' is empty
+    DEBUG	2013-10-17 8:27:10  success: table 'occurrence' is empty
+    TRACE	2013-10-17 8:27:10  bool trokam::db_handler::is_db_empty()  END
+
+~~~~~~~~~~~~~~~~~~~~~~~~
+8 - Do some web crawling
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+In order to do some web crawling you will need a directory to put the text file version of the web pages indexed.
+In this case is named 'cabinet' and created right under trokam:
+
+    developer@trokam:~$ cd trokam/
+    developer@trokam:~/trokam/$ mkdir cabinet
+
+If you installed the files this command must run anywhere you are located:
+
+    developer@trokam:~$ db_feeder --db-name=web_data_00 --db-user=developer --page-limit=100 --file-set=/home/developer/trokam/cabinet/ --book-mode=RANDOM
+
+Otherwise otherwise put the complete path for you executable and indicate also where is the 'config' directory:
+
+    developer@trokam:~$ db_feeder --db-name=web_data_00 --db-user=developer --page-limit=100 --file-set=/home/developer/trokam/cabinet/ --book-mode=RANDOM --config=/home/developer/trokam/code/config
+
+~~~~~~~~~~~~~~~~~~~~~~
+9 - Rank the web pages
+~~~~~~~~~~~~~~~~~~~~~~
+
+    developer@trokam:~$ db_rank --db-name=web_data_00 --db-user=developer
+
+~~~~~~~~~~~~
+10 - Search!
+~~~~~~~~~~~~
+
+Use 'query_client' and put what you are searching for in the option 'words'. The result is given in HTML format.
+
+    developer@trokam:~$ query_client --db-name=web_data_00 --db-user=developer --query-method=direct --words=music
+
+    <strong>Open Directory - Science: Technology: Acoustics, Ultrasound and Vibration</strong><br/>
+    <a href="http://www.dmoz.org/Science/Technology/Acoustics%2C_Ultrasound_and_Vibration">http://www.dmoz.org/Science/Technology/Acoustics%2C_Ultrasound_and_Vibration</a><br/><br/>
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+11 - Keep your sources updated
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You can update the code anytime using 'git' inside the directory trokam/code:
+
+    developer@trokam:~/trokam/code$ git pull
+
+~~~~~~~~~~~~~~~~~~~
+12 - Keep in touch!
+~~~~~~~~~~~~~~~~~~~
+
+Check the list of issues at https://github.com/trokam/code/issues
+Send your feedback nicolas.slusarenko@trokam.com
+Thanks!
+
+
