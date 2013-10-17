@@ -29,6 +29,7 @@
 
 /// Trokam
 #include "file_management.h"
+#include "options.h"
 
 /***********************************************************************
  *
@@ -39,7 +40,8 @@ namespace trokam
     class language
     {
         public:
-            static std::string detect(std::string &text);
+            static std::string detect(const trokam::options &options,
+                                      const std::string &text);
     };
 }
 

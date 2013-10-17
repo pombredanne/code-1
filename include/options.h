@@ -58,6 +58,7 @@ namespace trokam
             std::string  query_method() const;
             std::string  socket_file() const;
             std::string  file_set() const;
+            std::string  config() const;
 
         private:
             int          opt_page_limit;
@@ -74,6 +75,7 @@ namespace trokam
             std::string  opt_query_method;
             std::string  opt_socket_file;
             std::string  opt_file_set;
+            std::string  opt_config;
             severity  opt_log_level;
     };
 }

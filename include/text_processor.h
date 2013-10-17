@@ -24,6 +24,9 @@
 /// C++
 #include <string>
 
+/// Trokam
+#include "options.h"
+
 struct word_container
 {
     std::string language;
@@ -38,13 +41,16 @@ namespace trokam
 {
     class text_processor
     {
+        public:
+            text_processor(const trokam::options &options,
+                           const std::string &file_name);
+            bool word_frequency(word_container &words);
+            static void get_line_match(const std::string &file_name,
+                                       const std::string &word, std::string &line);
+
         private:
             std::string content;
-
-        public:
-            text_processor(std::string file_name);
-            bool word_frequency(word_container &words);
-            static void get_line_match(const std::string &file_name, const std::string &word, std::string &line);
+            trokam::options opt;
     };
 }
 

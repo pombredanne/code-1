@@ -56,6 +56,7 @@ trokam::options::options(int argc, const char* argv[])
         ("query-method", boost::program_options::value<std::string>(), "Query method")
         ("socket-file",  boost::program_options::value<std::string>(), "Socket file")
         ("file-set",     boost::program_options::value<std::string>(), "File set")
+        ("config",       boost::program_options::value<std::string>(), "Config file")
         ("book-mode",    boost::program_options::value<std::string>(), "Booking mode: RANDOM, DOMAIN, SEED, LESS_POPULATED");
     boost::program_options::variables_map vm;
     boost::program_options::store(boost::program_options::parse_command_line(argc, argv, desc), vm);
@@ -247,6 +248,18 @@ trokam::options::options(int argc, const char* argv[])
 		opt_file_set= vm["file-set"].as<std::string>();
     }
 
+    /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ///
+    /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    opt_config= "";
+    if(vm.count("config"))
+    {
+		opt_config= vm["config"].as<std::string>();
+    }
+
+    /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ///
+    /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     if(opt_log_level <= trokam::DEBUG)
     {
         LOG(DEBUG, "db-host= "  << opt_db_host);
@@ -263,6 +276,7 @@ trokam::options::options(int argc, const char* argv[])
         LOG(DEBUG, "socket-file= "  << opt_socket_file);
         LOG(DEBUG, "file-set= "  << opt_file_set);
         LOG(DEBUG, "log-level= "  << opt_log_level);
+        LOG(DEBUG, "config= " << opt_config);
     }
 }
 
@@ -286,6 +300,7 @@ trokam::options::options(const trokam::options &opt)
     opt_query_method= opt.query_method();
     opt_socket_file= opt.socket_file();
     opt_file_set= opt.file_set();
+    opt_config= opt.config();
 }
 
 /***********************************************************************
@@ -319,6 +334,7 @@ trokam::options& trokam::options::operator= (const trokam::options &opt)
     opt_query_method= opt.query_method();
     opt_socket_file= opt.socket_file();
     opt_file_set= opt.file_set();
+    opt_config= opt.config();
 
     /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Return this object
@@ -456,7 +472,18 @@ std::string trokam::options::file_set() const
  *
  *
  **********************************************************************/
+std::string trokam::options::config() const
+{
+    return opt_config;
+}
+
+/***********************************************************************
+ *
+ *
+ **********************************************************************/
 trokam::severity trokam::options::log_level() const
 {
     return opt_log_level;
 }
+
+

@@ -30,6 +30,8 @@ BIN=./bin
 
 COMMON_BIN=/usr/local/bin
 
+CONFIG=/usr/local/etc/trokam/
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # db feeder
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -199,6 +201,8 @@ install :
 	sudo cp ./bin/* $(COMMON_BIN)
 	sudo chmod a+x -R $(COMMON_BIN)
 	sudo chown root:root -R $(COMMON_BIN)
+	sudo mkdir -p $(CONFIG)
+	sudo cp ./config/* $(CONFIG)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #

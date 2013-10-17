@@ -40,7 +40,8 @@
 /***********************************************************************
  *
  **********************************************************************/
-trokam::text_processor::text_processor(std::string file_name)
+trokam::text_processor::text_processor(const trokam::options &options,
+                                       const std::string &file_name): opt(options)
 {
     content= file_management::get_file_contents(file_name);
 }
@@ -56,7 +57,7 @@ bool trokam::text_processor::word_frequency(word_container &words)
     /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Language detection
     /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    lang= language::detect(content);
+    lang= language::detect(opt, content);
     words.language= lang;
 
     /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -78,23 +79,23 @@ bool trokam::text_processor::word_frequency(word_container &words)
             /// It skip all strings of three or less characters
             /// that have numbers .
             /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-			if (token.length() <= 3)
-			{
-				unsigned int loc= token.find_first_of("1234567890");
-				if (loc != std::string::npos)
-				{
-					continue;
-				}
-			}
+            if (token.length() <= 3)
+            {
+                unsigned int loc= token.find_first_of("1234567890");
+                if (loc != std::string::npos)
+                {
+                    continue;
+                }
+            }
 
             /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             /// It skip all words with some strange characters.
             /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-			unsigned int loc= token.find_first_of("°¬!¡#$%&/()=?¿*+~[]{}^;:., <>©");
-			if (loc != std::string::npos)
-			{
-				continue;
-			}
+            unsigned int loc= token.find_first_of("°¬!¡#$%&/()=?¿*+~[]{}^;:., <>©");
+            if (loc != std::string::npos)
+            {
+                continue;
+            }
 
             /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             ///
@@ -102,16 +103,16 @@ bool trokam::text_processor::word_frequency(word_container &words)
             words.store[token]++;
             count++;
         }
-		LOG(DEBUG, "tokens=" << count);
-		LOG(DEBUG, "words=" << words.store.size());
-		LOG(DEBUG, "lang=" << words.language);
+        LOG(DEBUG, "tokens=" << count);
+        LOG(DEBUG, "words=" << words.store.size());
+        LOG(DEBUG, "lang=" << words.language);
         return true;
     }
     else
     {
-       	LOG(WARNING, "tokens and words not identified, language UNKNOWN: " << lang);
+        LOG(WARNING, "tokens and words not identified, language UNKNOWN: " << lang);
         return false;
-	}
+    }
 }
 
 /***********************************************************************

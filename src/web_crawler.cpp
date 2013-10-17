@@ -168,7 +168,7 @@ void trokam::web_crawler::run()
                 LOG(DEBUG, "Data file: " << file_content_text);
                 if(fc.convert_to_text(file_content_raw, file_content_text) == true)
                 {
-                    trokam::text_processor text(file_content_text);
+                    trokam::text_processor text(opt, file_content_text);
                     word_container words;
                     if(text.word_frequency(words))
                     {
